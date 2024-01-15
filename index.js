@@ -20,8 +20,8 @@ app.use("/api/v1", AuthRoutes);
 app.use("/api/v1", GradeRoutes);
 app.use("/api/v1", StudentRoutes);
 
-app.use("/playlists", require("./routes/playlistRoutes"));
-app.use("/comments", require("./routes/commentsRoutes"));
+app.use("/playlists", require("../routes/playlistRoutes.js"));
+app.use("/comments", require("../routes/commentsRoutes.js"));
 
 app.listen(3000, () => {
   console.log("Example app listening on port 3000!");
