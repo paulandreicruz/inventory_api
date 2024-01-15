@@ -16,12 +16,9 @@ app.get("/", (req, res) => {
   res.send("Hello vercel!");
 });
 
-app.use("/api/v1", AuthRoutes);
-app.use("/api/v1", GradeRoutes);
-app.use("/api/v1", StudentRoutes);
-
-app.use("/playlists", require("../routes/playlistRoutes.js"));
-app.use("/comments", require("../routes/commentsRoutes.js"));
+app.use("/api/v1/auth", AuthRoutes);
+app.use("/api/v1/grades", GradeRoutes);
+app.use("/api/v1/students", StudentRoutes);
 
 app.listen(3000, () => {
   console.log("Example app listening on port 3000!");
