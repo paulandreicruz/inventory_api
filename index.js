@@ -20,6 +20,4 @@ app.use("/api/v1/auth", AuthRoutes);
 app.use("/api/v1/grades", GradeRoutes);
 app.use("/api/v1/students", StudentRoutes);
 
-app.listen(3000, () => {
-  console.log("Example app listening on port 3000!");
-});
+export default app;
