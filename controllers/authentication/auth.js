@@ -1,5 +1,6 @@
 import query from "../../config/db.js";
 import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 
 export async function registerUser(req, res, isStudent) {
   const { password, firstname, lastname, middlename, email } = req.body;
@@ -52,6 +53,15 @@ export async function registerUser(req, res, isStudent) {
   }
 }
 
+function generateToken(user) {
+  const token = jwt.sign(
+    { id: user.id, email: user.email, isStudent: user.isstudent },
+    "your-secret-key", // Replace with your actual secret key
+    { expiresIn: "1h" } // Token expires in 1 hour
+  );
+  return token;
+}
+
 export async function login(req, res, isStudent) {
   const { email, password } = req.body;
 
@@ -64,12 +74,15 @@ export async function login(req, res, isStudent) {
 
     // Check if the user exists and the password matches
     if (user.length > 0 && (await bcrypt.compare(password, user[0].password))) {
+      const token = generateToken(user[0]);
+
       res.status(200).json({
         success: true,
         message: isStudent
           ? "Student login successful"
           : "Teacher login successful",
         user: user[0],
+        token: token, // Include the generated token in the response
       });
     } else {
       res.status(401).json({ success: false, message: "Invalid credentials" });

@@ -16,8 +16,8 @@ app.get("/", (req, res) => {
   res.send("Hello vercel!");
 });
 
-app.use("/api/v1/auth", AuthRoutes);
-app.use("/api/v1/grades", GradeRoutes);
-app.use("/api/v1/students", StudentRoutes);
+app.use("/api/v1", AuthRoutes);
+app.use("/api/v1", GradeRoutes);
+app.use("/api/v1", StudentRoutes);
 
-export default app;
+app.listen(3000, () => console.log("Server running on port 3000"));

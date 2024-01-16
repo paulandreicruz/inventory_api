@@ -1,34 +1,40 @@
 import query from "../../config/db.js";
 
+// Import necessary dependencies or modules
+
 export async function addGrade(req, res) {
-  const { userId, subject, score } = req.body;
+  // Extract data from the request body
+  const { studentid, subject, score } = req.body;
 
   try {
-    // Check if the student exists
+    // Check if the student exists in the 'student' table
     const student = await query("SELECT * FROM student WHERE id = $1", [
-      userId,
+      studentid,
     ]);
 
+    // If the student is not found, return a 404 response
     if (student.length === 0) {
       return res
         .status(404)
         .json({ success: false, message: "Student not found" });
     }
 
-    // Insert the new grade into the database
+    // Insert the new grade into the 'grade' table
     const insertResult = await query(
-      `INSERT INTO new_grade (userid, subject, score)
+      `INSERT INTO grade (studentid, subject, score)
         VALUES ($1, $2, $3)
         RETURNING *`,
-      [userId, subject, score]
+      [studentid, subject, score]
     );
 
+    // Return a success response with the added grade
     res.status(201).json({
       success: true,
       message: "Grade added successfully",
       grade: insertResult[0],
     });
   } catch (err) {
+    // Handle any errors that occur during the process
     console.error("Error adding grade:", err);
     res.status(500).json({ success: false, message: "Internal Server Error" });
   }
@@ -39,7 +45,7 @@ export async function getStudentGrades(req, res) {
 
   try {
     // Fetch student grades for a specific user
-    const grades = await query("SELECT * FROM new_grade WHERE userid = $1", [
+    const grades = await query("SELECT * FROM grade WHERE studentid  = $1", [
       userId,
     ]);
 
@@ -58,20 +64,23 @@ export async function getAllStudentsWithGrades(req, res) {
   try {
     // Fetch all students with their grades using raw PostgreSQL query
     const studentsWithGradesQuery = `
-        SELECT
-          student.id as studentId,
-          student.firstname,
-          student.lastname,
-          student.email,
-          new_grade.subject,
-          new_grade.score
-        FROM
-          student
-        LEFT JOIN
-          new_grade ON student.id = new_grade.userid
-      `;
+    SELECT
+      student.id as studentId,
+      student.firstname,
+      student.lastname,
+      student.email,
+      grade.subject,
+      grade.score
+    FROM
+      student
+    LEFT JOIN
+      grade ON student.id = grade.studentId;
+  `;
+
+    console.log("Query:", studentsWithGradesQuery);
 
     const studentsWithGrades = await query(studentsWithGradesQuery);
+    console.log("Result:", studentsWithGrades);
 
     // Organize the data to group grades by student
     const studentsData = studentsWithGrades.reduce((acc, student) => {
